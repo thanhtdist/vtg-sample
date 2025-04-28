@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "declaration": true,
+    "downlevelIteration": true,
+    "experimentalDecorators": true,
+    "lib": [
+      "DOM",
+      "ES2015",
+      "ES2016.Array.Include",
+      "ES2017.SharedMemory"
+    ],
+    "module": "commonjs",
+    "noImplicitAny": true,
+    "noUnusedLocals": true,
+    "sourceMap": true,
+    "inlineSources": true,
+    "stripInternal": true,
+    "target": "ES2015",
+    "esModuleInterop": true
+  }
+}

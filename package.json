@@ -1,0 +1,153 @@
+{
+  "name": "amazon-chime-sdk-js",
+  "version": "3.28.0",
+  "description": "Amazon Chime SDK for JavaScript",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "files": [
+    "libs",
+    "build",
+    "CHANGELOG.md",
+    "NOTICE"
+  ],
+  "engines": {
+    "node": "^18 || ^19 || ^20 || ^22",
+    "npm": "^8 || ^9 || ^10"
+  },
+  "scripts": {
+    "clean": "rimraf .nyc_output build node_modules",
+    "copy": "node script/copy-protocol.js",
+    "check": "node script/check-code-style.js",
+    "login": "node script/login.js",
+    "logout": "node script/logout.js",
+    "lint": "eslint --config config/eslintrc.json src test --ext .ts,.tsx,.js --fix",
+    "red": "node script/generate-red-worker-code.js",
+    "tsc:guides": "tsc --build guides/tsconfig.json",
+    "tsc:watch": "tsc --build --watch config/tsconfig.json",
+    "tsc:src": "tsc --build config/tsconfig.json",
+    "build": "node script/barrelize.js && node script/generate-version.js && npm run red && npm run tsc:src && npm run tsc:guides && npm run copy",
+    "prebuild": "ruby script/conditional-install",
+    "prebuild:release": "node script/check-lockfile-version.js && node script/check-voice-focus-version.js && script/prebuild",
+    "build:release": "npm run build && npm run lint && npm run check && npm run doc && npm run test:retry",
+    "postbuild:release": "script/postbuild",
+    "postbuild": "tsc -p config/tsconfig.import.json",
+    "predoc": "rimraf docs && node script/build-guides.js",
+    "doc": "ruby script/generate-docs",
+    "postdoc": "node script/update-typedoc-link.js",
+    "test": "npm run test:fast",
+    "test:glob": "cross-env TS_NODE_PROJECT=test/tsconfig.json TS_NODE_CACHE=false nyc mocha --stack-trace-limit=1000  --async-stack-traces -v -r esm -rv ts-node/register -- ",
+    "test:fast": "npm run test:glob \"test/**/*.test.ts\"",
+    "test:slow": "cross-env MOCHA_TEST_DELAY_MS=100 npm run test:fast",
+    "test:retry": "(npm run test:fast || npm run test:fast || npm run test:fast || npm run test:fast || npm run test:fast)",
+    "test:integration": "cd ./integration/js && npm run test ",
+    "test:integration-audio": "cd ./integration/js && npm run test -- integration audio ",
+    "test:integration-video": "cd ./integration/js && npm run test -- integration video ",
+    "test:integration-video-test-app": "cd ./integration/js && npm run test -- integration video_test_app ",
+    "test:integration-meeting-end": "cd ./integration/js && npm run test -- integration meeting_end ",
+    "test:integration-content-share-test-suite-one": "cd ./integration/js && npm run test -- integration content_share_test_suite_one ",
+    "test:integration-content-share-test-suite-two": "cd ./integration/js && npm run test -- integration content_share_test_suite_two ",
+    "test:integration-data-message": "cd ./integration/js && npm run test -- integration data_message ",
+    "test:integration-meeting-readiness-checker": "cd ./integration/js && npm run test -- integration meeting_readiness_checker ",
+    "test:integration-messaging": "cd ./integration/js && npm run test -- integration messaging ",
+    "test:integration-transcription": "cd ./integration/js && npm run test -- integration transcription ",
+    "test:integration-background-blur": "cd ./integration/js && npm run test -- integration background_blur ",
+    "test:integration-echo-reduction": "cd ./integration/js && npm run test -- integration echo_reduction",
+    "test:browser-compatibility-audio": "cd ./integration/js && npm run test -- browser_compatibility audio ",
+    "test:browser-compatibility-video": "cd ./integration/js && npm run test -- browser_compatibility video ",
+    "test:browser-compatibility-content-share": "cd ./integration/js && npm run test -- browser_compatibility content_share ",
+    "test:browser-compatibility-data-message": "cd ./integration/js && npm run test -- browser_compatibility data_message ",
+    "test:browser-compatibility-meeting-readiness-checker": "cd ./integration/js && npm run test -- browser_compatibility meeting_readiness_checker ",
+    "test:browser-compatibility-background-blur": "cd ./integration/js && npm run test -- browser_compatibility background_blur ",
+    "test:browser-compatibility-voice-focus": "cd ./integration/js && npm run test -- browser_compatibility voice_focus ",
+    "test:linux-browser-compatibility-audio": "cd ./integration/js && npm run test -- browser_compatibility linux_audio ",
+    "test:linux-browser-compatibility-video": "cd ./integration/js && npm run test -- browser_compatibility linux_video ",
+    "test:linux-browser-compatibility-content-share": "cd ./integration/js && npm run test -- browser_compatibility linux_content_share ",
+    "test:linux-browser-compatibility-other": "cd ./integration/js && npm run test -- browser_compatibility linux_other "
+  },
+  "devDependencies": {
+    "@fluffy-spoon/substitute": "^1.89.0",
+    "@types/chai": "^4.3.5",
+    "@types/chai-as-promised": "^7.1.0",
+    "@types/mocha": "^5.2.6",
+    "@types/sinon": "^7.0.12",
+    "@types/uuid": "^8.3.1",
+    "@typescript-eslint/eslint-plugin": "^4.18.0",
+    "@typescript-eslint/parser": "^4.18.0",
+    "chai": "^4.3.7",
+    "chai-as-promised": "^7.1.1",
+    "cross-env": "^6.0.3",
+    "eslint": "^7.22.0",
+    "eslint-config-prettier": "^6.15.0",
+    "eslint-plugin-prettier": "^3.1.4",
+    "eslint-plugin-simple-import-sort": "^5.0.3",
+    "esm": "^3.2.25",
+    "fetch-mock": "9.10.7",
+    "fs-extra": "^8.1.0",
+    "git-rev-sync": "^3.0.2",
+    "longjohn": "^0.2.12",
+    "mocha": "^10.0.0",
+    "node-fetch": "^2.6.1",
+    "nyc": "^17.1.0",
+    "prettier": "^2.1.2",
+    "protobufjs-cli": "^1.1.2",
+    "rimraf": "^3.0.2",
+    "sinon": "^7.3.2",
+    "spawn-wrap": "^2.0.0",
+    "ts-node": "^9.1.1",
+    "typedoc": "0.21.2",
+    "typedoc-plugin-merge-modules": "^3.1.0",
+    "typescript": "^4.2.3"
+  },
+  "dependencies": {
+    "@aws-crypto/sha256-js": "^2.0.1",
+    "@aws-sdk/client-chime-sdk-messaging": "^3.341.0",
+    "@aws-sdk/util-hex-encoding": "^3.47.0",
+    "@types/ua-parser-js": "^0.7.35",
+    "detect-browser": "^5.2.0",
+    "pako": "^2.0.4",
+    "protobufjs": "^7.3.0",
+    "resize-observer": "^1.0.0",
+    "ua-parser-js": "^1.0.40"
+  },
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/aws/amazon-chime-sdk-js"
+  },
+  "nyc": {
+    "include": [
+      "src/**/*.ts"
+    ],
+    "exclude": [
+      "src/**/*.d.ts",
+      "src/videodownlinkbandwidthpolicy/VideoAdaptiveProbePolicy.ts"
+    ],
+    "extension": [
+      ".ts"
+    ],
+    "require": [
+      "ts-node/register"
+    ],
+    "reporter": [
+      "text-summary",
+      "html",
+      "lcov",
+      "cobertura"
+    ],
+    "sourceMap": true,
+    "instrument": true,
+    "report-dir": "./coverage",
+    "all": true,
+    "check-coverage": true,
+    "branches": 100,
+    "lines": 100,
+    "functions": 100,
+    "statements": 100
+  },
+  "prettier": {
+    "arrowParens": "avoid",
+    "singleQuote": true,
+    "trailingComma": "es5",
+    "printWidth": 100
+  }
+}

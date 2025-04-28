@@ -1,0 +1,16 @@
+# run integration tests if files in these directories change
+demos/browser
+src/
+integration/
+.github/
+
+# exceptions
+!.eslintignore
+!src/versioning/Versioning.ts
+!README.md
+!integration/js/README.md
+!demos/browser/README.md
+!demos/device/README.md
+!guides/
+!docs/
+!.integration-watchlist

@@ -1,0 +1,31 @@
+#!/usr/bin/env ruby
+
+Dir.chdir(File.expand_path(File.join(File.dirname(__FILE__), '..')))
+
+def verbose command
+  puts "--> #{command}"
+  system(command) || fail("Failed: #{command}")
+end
+
+['SignalingProtocol'].each do |protocol|
+  dir = protocol.downcase
+
+  verbose "rm -rf src/#{dir}"
+  verbose "mkdir -p src/#{dir}"
+
+  verbose "node node_modules/.bin/pbjs -t static-module -w commonjs -o src/#{dir}/#{protocol}.js ./protocol/#{protocol}.proto"
+  # Mitigation for JSDocs related issue from https://github.com/protobufjs/protobuf.js/issues/1414#issuecomment-1290725151
+  #
+  # This has a PR that has been pending merge for a while: https://github.com/protobufjs/protobuf.js/pull/1824
+  temp_file_path = "src/#{dir}/#{protocol}.js.tmp"
+  File.open(temp_file_path, 'w') do |output_file|
+    File.foreach("src/#{dir}/#{protocol}.js") do |line|
+      output_file.puts line.gsub(/^( *\* )@exports/, '\1@name')
+    end
+  end
+  File.rename(temp_file_path, "src/#{dir}/#{protocol}.js")
+
+  verbose "node node_modules/.bin/pbts -o src/#{dir}/#{protocol}.d.ts src/#{dir}/#{protocol}.js"
+  # Disable use of Long in protobuf
+  File.write("src/#{dir}/#{protocol}.js", "$util.Long = undefined;\n$protobuf.configure();", mode:"a")
+end
